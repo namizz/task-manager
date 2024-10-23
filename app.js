@@ -3,6 +3,7 @@ const app = express();
 const routes = require("./routers/tasks");
 const path = require("path");
 const connectDB = require("./db/connect");
+require("dotenv").config();
 //middleware
 app.use(express.json());
 
@@ -19,10 +20,11 @@ const port = 3000;
 
 app.get("/hello", (req, res) => {
   console.log("Task Manager");
+  res.send("Hello");
 });
 const start = async () => {
   try {
-    await connectDB();
+    await connectDB(process.env.MONGO_URI);
     app.listen(port, console.log(`Listening ${port}`));
   } catch (error) {
     console.log(error);
