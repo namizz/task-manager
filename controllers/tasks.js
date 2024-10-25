@@ -7,7 +7,7 @@ const getAllTasks = async (req, res) => {
   } catch (error) {
     res.status(500).json({ msg: error });
   }
-  res.send("get all Tasks");
+  // res.send("get all Tasks");
 };
 const createTask = async (req, res) => {
   try {
@@ -17,10 +17,10 @@ const createTask = async (req, res) => {
     res.status(500).json({ msg: error });
   }
 };
-const deleteTask = (req, res) => {
+const deleteTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
-    const task = Task.findOneAndDelete({ _id: taskID });
+    const task = await Task.findOneAndDelete({ _id: taskID });
     if (!task)
       return res.status(404).json({ msg: `No task with id ${taskID}` });
     res.status(200).json({ task: null, status: "success" });
@@ -31,17 +31,21 @@ const deleteTask = (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
-    const task = Task.findOneAndUpdate({ _id: taskID }, req.body, {
-      new: true,
-      runValidators: true,
+    const task = await Task.findOneAndUpdate({ _id: taskID }, req.body, {
+      new: true, // returns the updated document
+      runValidators: true, // enforces validation
     });
-    if (!task)
+
+    if (!task) {
       return res.status(404).json({ msg: `No task with id ${taskID}` });
-    res.status(200).json({ task: null, status: "success" });
+    }
+
+    res.status(200).json({ task, status: "success" }); // Include the updated task in the response
   } catch (error) {
-    res.status(200).json({ msg: error });
+    res.status(500).json({ msg: error.message });
   }
 };
+
 const getTask = async (req, res) => {
   try {
     const { id: taskID } = req.params;
